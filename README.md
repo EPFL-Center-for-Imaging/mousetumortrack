@@ -36,6 +36,7 @@ Track tumor nodules from a labelled 3D timesereies array:
 ```py
 from mousetumortrack import run_tracking
 
+# labels_timeseries is a 4D array of shape (TZYX)
 linkage_df, grouped_df, labels_timeseries_tracked = run_tracking(labels_timeseries)
 ```
 
@@ -47,7 +48,7 @@ If you encounter any problems, please file an issue along with a detailed descri
 
 ## License
 
-This model is licensed under the [BSD-3](LICENSE.txt) license.
+This project is licensed under the [BSD-3](LICENSE.txt) license.
 
 ## Related projects
 
