@@ -141,3 +141,5 @@ checkpoints1/
 notebooks/
 
 _version.py
+
+.vscode/

@@ -25,7 +25,7 @@ or clone the repository and install with:
 
 ```sh
 git clone git+https://github.com/EPFL-Center-for-Imaging/mousetumortrack.git
-cd mouselungseg
+cd mousetumortrack
 pip install -e .
 ```
 
