@@ -52,8 +52,8 @@ This project is licensed under the [BSD-3](LICENSE.txt) license.
 
 ## Related projects
 
-- [Mouse Tumor Net](https://gitlab.com/epfl-center-for-imaging/mousetumornet) | Detect tumor nodules in mice CT scans.
-- [Mouse Lungs Seg](https://gitlab.com/epfl-center-for-imaging/mouselungseg) | Detect the lungs cavity in mice CT scans.
+- [Mouse Tumor Net](https://github.com/EPFL-Center-for-Imaging/mousetumornet) | Detect tumor nodules in mice CT scans.
+- [Mouse Lungs Seg](https://github.com/EPFL-Center-for-Imaging/mouselungseg) | Detect the lungs cavity in mice CT scans.
 
 ## Acknowledgements
 
