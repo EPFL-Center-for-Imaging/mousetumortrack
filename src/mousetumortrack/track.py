@@ -172,6 +172,7 @@ def _remap_timeseries_labels(timeseries, linkage_df):
 def run_tracking(
     labels_timeseries: np.ndarray,
     image_timeseries: np.ndarray=None,
+    lungs_timeseries: np.ndarray=None,
     with_lungs_registration=False,
     max_dist_px=30,
     memory=0,
@@ -181,11 +182,18 @@ def run_tracking(
 ) -> pd.DataFrame:
     """Tracking objects between frames."""
     if with_lungs_registration:
-        registered_labels_timeseries, *_ = register_timeseries_from_lungs_mask(
-            labels_timeseries, 
-            image_timeseries=image_timeseries, 
-            order=0
-        )
+        if lungs_timeseries is not None:
+            registered_labels_timeseries, *_ = register_timeseries_from_lungs_mask(
+                labels_timeseries, 
+                lungs_timeseries=lungs_timeseries, 
+                order=0
+            )
+        else:
+            registered_labels_timeseries, *_ = register_timeseries_from_lungs_mask(
+                labels_timeseries, 
+                image_timeseries=image_timeseries, 
+                order=0
+            )
     else:
         registered_labels_timeseries = labels_timeseries
 
