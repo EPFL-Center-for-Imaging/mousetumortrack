@@ -9,26 +9,15 @@ from laptrack import LapTrack
 from mousetumortrack.register import register_timeseries_from_lungs_mask
 
 
-def _initialize_coordinate_df(labels_timeseries):
+def _initialize_df(labels_timeseries, properties):
     dfs = []
     for t, frame in enumerate(labels_timeseries):
         if frame.sum() == 0:
             continue
-        df = pd.DataFrame(
-            regionprops_table(frame, properties=["centroid", "area", "label"])
-        )
+        df = pd.DataFrame(regionprops_table(frame, properties=properties))
         df["frame_forward"] = t
         dfs.append(df)
     coordinate_df = pd.concat(dfs)
-    coordinate_df.rename(
-        columns={
-            "centroid-0": "z",
-            "centroid-1": "y",
-            "centroid-2": "x",
-            "area": "volume",
-        },
-        inplace=True,
-    )
     # Invert the frame IDs to be able to track particles from the end
     coordinate_df["frame"] = (
         coordinate_df["frame_forward"].max() - coordinate_df["frame_forward"]
@@ -171,8 +160,8 @@ def _remap_timeseries_labels(timeseries, linkage_df):
 
 def run_tracking(
     labels_timeseries: np.ndarray,
-    image_timeseries: np.ndarray=None,
-    lungs_timeseries: np.ndarray=None,
+    image_timeseries: np.ndarray = None,
+    lungs_timeseries: np.ndarray = None,
     with_lungs_registration=False,
     max_dist_px=30,
     memory=0,
@@ -184,20 +173,32 @@ def run_tracking(
     if with_lungs_registration:
         if lungs_timeseries is not None:
             registered_labels_timeseries, *_ = register_timeseries_from_lungs_mask(
-                labels_timeseries, 
-                lungs_timeseries=lungs_timeseries, 
-                order=0
+                labels_timeseries, lungs_timeseries=lungs_timeseries, order=0
             )
         else:
             registered_labels_timeseries, *_ = register_timeseries_from_lungs_mask(
-                labels_timeseries, 
-                image_timeseries=image_timeseries, 
-                order=0
+                labels_timeseries, image_timeseries=image_timeseries, order=0
             )
     else:
         registered_labels_timeseries = labels_timeseries
 
-    df = _initialize_coordinate_df(registered_labels_timeseries)
+    # Volume needs to be computed on the original labels
+    df_original_labels = _initialize_df(labels_timeseries, properties=["area", "label"])
+
+    # Positions are computed on the registered labels
+    df_registered_labels = _initialize_df(registered_labels_timeseries, properties=["centroid", "label"],)
+
+    df = pd.merge(df_original_labels, df_registered_labels, on=["label", "frame_forward", "frame"])
+
+    df.rename(
+        columns={
+            "centroid-0": "z",
+            "centroid-1": "y",
+            "centroid-2": "x",
+            "area": "volume",
+        },
+        inplace=True,
+    )
 
     if method == "trackpy":
         linkage_df = _track_trackpy(df, max_dist_px, memory)
